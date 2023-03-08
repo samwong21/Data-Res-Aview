@@ -220,7 +220,7 @@ def get_video_details(youtube,video_list):
                                     dislikeCount = dislikeCount,
                                     commentCount = commentCount,
                                     postingDate = postingDate,
-                                    made_for_kids = made_for_kids,
+                                    made_for_kids = made_for_kids
                                     
                                     
             )
