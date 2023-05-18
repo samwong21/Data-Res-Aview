@@ -4,21 +4,21 @@
 
 This is a Streamlit app that provides [TODO: brief description of your app's purpose or functionality].
 
-### Installation
+### Installation and Setup
 
 1. Clone the repository: 
 
-git clone https://github.com/yourusername/your-repo.git
+`git clone https://github.com/samwong21/Data-Res-Aview.git`
 
 2. Navigate to the project directory:
 
-cd your-repo
+`cd [your-repo]`
 
 3. Install the required dependencies using pip:
 
-pip install -r [TODO: add required dependency.txt]
+`pip install -r [TODO: add required dependency.txt]`
 
-4. add a `.env` file to folder
+4. add a `.env` file to folder 
 
 In `.env` file, add
 
@@ -29,7 +29,7 @@ In `.env` file, add
 
 1. Run the Streamlit app:
 
-streamlit run dashboard.py
+`streamlit run dashboard.py`
 
 2. If app does not pop up automatically, access the app in your web browser by opening the provided URL (usually http://localhost:8501).
 
