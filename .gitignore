@@ -1,0 +1,6 @@
+.env
+*.ipynb
+test.py
+sam_new_func/
+pastfiles/
+dashboard.py
