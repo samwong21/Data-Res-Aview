@@ -250,6 +250,7 @@ def get_video_details(youtube,video_list):
             commentCount = video["statistics"].get("commentCount",0)
             
             duration = video["contentDetails"].get("duration",0)
+            #ex value: PT41M36S, this means 41 minutes and 36 seconds
            
             
             made_for_kids = video['status'].get('madeForKids',None)
