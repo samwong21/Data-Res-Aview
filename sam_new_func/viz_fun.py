@@ -5,6 +5,9 @@ import pandas as pd
 import plotly.express as px
 import re
 from sam_fun import *
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+
 api_key = "AIzaSyBqgqP0nQ-qP4LJc4_kytQTERSq-pXOff0" # you can change it to your own api 
 
 ########## scraping from https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#AA############
@@ -45,13 +48,15 @@ def get_country_code(country_name):
     return country_code
     
 ###############################################################################
-def plot_top_channels(country, column, percentile):
+def plot_top_channels(country, column, top_percentile):
     """
     returns a df with top percentile Youtube channels in a specific country:
     
     @country: a string for the name of the country
-    @column: a string for the column to define top 5; 
+    @column: a string for the column to define "top"; 
             3 options: 'Subscriber Count', 'View Count', 'Video Count'
+    @top_percentile: a double or integer indicating what percentile of creators, 
+                    ex 5 is top 5% of creators
     """
     country_code = get_country_code(country) # switch the country name into country code
     if column == 'Subscriber Count':
@@ -66,12 +71,12 @@ def plot_top_channels(country, column, percentile):
     stats_df = channels_stats(youtube, creator_ids)
     stats_df = add_emails(stats_df)
     #top5 = in_stats_df.sort_values(df_column, ascending = False).head(5)
-    top_channels_df = top_channels(stats_df, df_column, percentile)
+    top_channels_df = top_channels(stats_df, df_column, (100 - top_percentile))
      
     #text_labels = [f'{value}' for value in top5[df_column]] 
     legend_labels = [f'{email}' for email in top_channels_df.emails]
     fig = px.bar(top_channels_df, x = 'title', y = df_column,
-            title = 'Top ' + str(100 - percentile) + ' Percentile Youtube Channels in' + ' ' + 
+            title = 'Top ' + str(top_percentile) + ' Percentile Youtube Channels in\n' + ' ' + 
                  country + ' ' + 'Based on' + ' ' + column,
             hover_data = ['title', 'country', 'viewCount', 'subscriberCount', 'videoCount'],
             color = legend_labels) # text_labels?
@@ -83,6 +88,45 @@ def plot_top_channels(country, column, percentile):
     
 ###############################################################################    
     
+def get_channel_id(channel_title):
+    """
+    input channel title, output its channel id
     
+    @channel_title: a string for the title of a Youtube channel
+    """
+    youtube = build('youtube', 'v3', developerKey = api_key)
+    search_response = youtube.search().list(
+        q=channel_title,
+        part='id',
+        type='channel',
+        maxResults=1
+    ).execute()
+
+    channel_id = search_response['items'][0]['id']['channelId']
     
+    return channel_id
+
+###############################################################################     
     
+def plot_tags_wordcloud(channel_title):
+    """
+    input a channel title, plot the wordcloud of the tags of the videos in this channel
+    
+    @channel_title: a string for the title of a Youtube channel
+    """
+    
+    youtube = build('youtube', 'v3', developerKey = api_key)
+    channel_id = get_channel_id(channel_title)
+    video_id = get_videoID_list(youtube, channel_id)
+    df = get_video_details(youtube,video_id)
+
+    tag_lists = df['tags']
+    combined_tag_lists = [item for sublist in tag_lists for item in sublist]
+
+    text = ' '.join(combined_tag_lists)
+
+    wordcloud = WordCloud(background_color="white").generate(text)
+
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.show()

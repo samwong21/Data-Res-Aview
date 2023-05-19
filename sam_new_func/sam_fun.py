@@ -248,6 +248,9 @@ def get_video_details(youtube,video_list):
             #dislike count is always private to public I think 
             dislikeCount = video["statistics"].get("dislikeCount","private")
             commentCount = video["statistics"].get("commentCount",0)
+            
+            duration = video["contentDetails"].get("duration",0)
+            #ex value: PT41M36S, this means 41 minutes and 36 seconds
            
             
             made_for_kids = video['status'].get('madeForKids',None)
@@ -258,8 +261,10 @@ def get_video_details(youtube,video_list):
                                     description = description,
                                     tags = tags,
                                     viewCount = viewCount,
+                                    likeCount = likeCount,
                                     dislikeCount = dislikeCount,
                                     commentCount = commentCount,
+                                    duration = duration,
                                     postingDate = postingDate,
                                     made_for_kids = made_for_kids
                                     
@@ -299,4 +304,45 @@ def add_emails(df):
     return df
     
 
+    
+##Functions for filtering channels
+
+#1) by topic category 
+
+def unique_topics(df):
+    """
+    Gets all unique (individual) topics from entire data frame (not unique lists of topics)
+    """
+    lists = list(df["topic"])
+    combined_list = [item for sublist in lists if sublist is not None for item in sublist]
+    unique_topics = list(set(combined_list))
+    return unique_topics
+
+
+
+def categorize_channels(chosen_topics,df):
+    '''
+    Takes a list of topics, returns channels that include at least one of specified topics
+    
+    chosen_topic: a list of one or more topics
+    df: channel stats df
+    
+    returns: filtered version of df
+    '''
+    filtered_df = df[df['topic'].apply(lambda x: x is not None and any(word in x for word in chosen_topics))]
+    return filtered_df.reset_index(drop=True)
+
+
+def between_subs(lower_limit,upper_limit,df):
+    '''
+    Takes a lower and upper limit, to finds channels between the two. It is inclusive of both boundaries.
+    
+    lower_limit: A number
+    upper_limit: A number
+    df: channel stats df
+    
+    returns filtered version of df
+    '''
+    filtered_df = df[df['subscriberCount'].between(lower_limit, upper_limit)]
+    return filtered_df.reset_index(drop=True)
     
