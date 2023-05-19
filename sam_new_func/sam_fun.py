@@ -264,7 +264,7 @@ def get_video_details(youtube,video_list):
                                     likeCount = likeCount,
                                     dislikeCount = dislikeCount,
                                     commentCount = commentCount,
-                                    duration = duration
+                                    duration = duration,
                                     postingDate = postingDate,
                                     made_for_kids = made_for_kids
                                     
