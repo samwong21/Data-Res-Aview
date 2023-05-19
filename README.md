@@ -2,7 +2,7 @@
 
 ## Streamlit App
 
-This is a Streamlit app that provides [TODO: brief description of your app's purpose or functionality].
+This is a Streamlit app that provides Youtube trend analysis for top channel, youtuber, and videos.
 
 ### Installation and Setup
 
