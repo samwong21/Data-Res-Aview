@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.express as px
 import re
 from sam_fun import *
-api_key = "AIzaSyA-wrB_ng2gBm3Oac1RJXnLimDSE2mUsQY" # you can change it to your own api 
+api_key = "AIzaSyBqgqP0nQ-qP4LJc4_kytQTERSq-pXOff0" # you can change it to your own api 
 
 ########## scraping from https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#AA############
 def get_country_code(country_name):
@@ -45,9 +45,9 @@ def get_country_code(country_name):
     return country_code
     
 ###############################################################################
-def plot_top_five_channels(country, column):
+def plot_top_channels(country, column, percentile):
     """
-    returns a df with top 5 Youtube channels in a specific country:
+    returns a df with top percentile Youtube channels in a specific country:
     
     @country: a string for the name of the country
     @column: a string for the column to define top 5; 
@@ -62,20 +62,23 @@ def plot_top_five_channels(country, column):
         df_column = 'videoCount'
         
     youtube = build("youtube","v3", developerKey=api_key)
-    in_creator_ids= trending_creators_by_country(youtube, country_code)
-    in_stats_df = channels_stats(youtube,in_creator_ids)
-    in_stats_df = add_emails(in_stats_df)
-    top5 = in_stats_df.sort_values(df_column, ascending = False).head(5)
+    creator_ids= trending_creators_by_country(youtube, country_code)
+    stats_df = channels_stats(youtube, creator_ids)
+    stats_df = add_emails(stats_df)
+    #top5 = in_stats_df.sort_values(df_column, ascending = False).head(5)
+    top_channels_df = top_channels(stats_df, df_column, percentile)
      
     #text_labels = [f'{value}' for value in top5[df_column]] 
-    legend_labels = [f'Emails: {email}' for email in top5.emails]
-    fig = px.bar(top5, x = 'title', y = df_column,
-            title = 'Top 5 Youtube Channels in' + ' ' + country + ' ' + 'Based on' + ' ' + column,
+    legend_labels = [f'{email}' for email in top_channels_df.emails]
+    fig = px.bar(top_channels_df, x = 'title', y = df_column,
+            title = 'Top ' + str(100 - percentile) + ' Percentile Youtube Channels in' + ' ' + 
+                 country + ' ' + 'Based on' + ' ' + column,
             hover_data = ['title', 'country', 'viewCount', 'subscriberCount', 'videoCount'],
             color = legend_labels) # text_labels?
     
     fig.update_layout(xaxis_title = 'Channels', yaxis_title= column)
-    fig.update_layout(legend_title_text='Legend Title', legend=dict(title='Groups'))
+    fig.update_layout(legend_title_text='Legend Title', 
+                      legend=dict(title='Emails', x=0, y=-1.2, orientation='h'))
     fig.show()
     
 ###############################################################################    
