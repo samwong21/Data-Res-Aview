@@ -2,9 +2,11 @@ import streamlit as st
 import pastfiles.trending_creator_functions as tcf
 import sam_new_func.sam_fun as sf
 from googleapiclient.discovery import build
+# import import_ipynb
 import os
 from dotenv import load_dotenv
-import sam_new_func.viz_fun as viz
+# import sam_new_func.viz_fun as viz
+# from sam_new_func import *
 
 
 
@@ -17,7 +19,8 @@ with st.sidebar.form(key='Form1'):
     # TODO: figure out how to plot top channel by subscriber decending 
     st.slider('Select the season range you want to include', 2013, 2020, (2013, 2020))
     # TODO: get countries from backend
-    st.selectbox('Filter by countries', [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020])
+    options = st.selectbox('Filter by countries',["United States of America", "India", "France"])
+    st.write('You selected:', options)
 
 
 @st.cache_data
@@ -27,7 +30,7 @@ def set_up():
     # Get the API key from the environment variables
     api_key = os.getenv('YOUTUBE_API_KEY')
     youtube = build("youtube","v3",developerKey=api_key)
-    st.write(viz.get_country_code("United States of America"))
+    # st.write(viz.get_country_code("United States of America"))
     popular_channel_ids = sf.trending_creators_by_country(youtube, "US")
     channel_stats = sf.channels_stats(youtube, popular_channel_ids)
     channel_stats_sorted = channel_stats.sort_values(by="subscriberCount", ascending=False)
