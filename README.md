@@ -14,11 +14,15 @@ This is a Streamlit app that provides Youtube trend analysis for top channel, yo
 
 `cd [your-repo]`
 
-3. Install the required dependencies using pip:
+3. Install packages automatically managed by pipenv using pipenv:
 
-`pip install -r [TODO: add required dependency.txt]`
+`pipenv install`
 
-4. add a `.env` file to folder 
+4. Install other required dependencies using pip:
+
+`pip install -r [Whatever package is not installed when running streamlit run dashboard.py]`
+
+5. add a `.env` file to folder 
 
 In `.env` file, add
 
@@ -33,7 +37,6 @@ In `.env` file, add
 
 2. If app does not pop up automatically, access the app in your web browser by opening the provided URL (usually http://localhost:8501).
 
-3. [TODO: Describe how to interact with the app and provide any necessary input or configuration instructions].
 
 ## Folder Structure
 
