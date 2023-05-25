@@ -7,6 +7,9 @@ import re
 from sam_fun import *
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+import seaborn as sns
+import math
+from datetime import datetime, timedelta
 
 api_key = "AIzaSyBqgqP0nQ-qP4LJc4_kytQTERSq-pXOff0" # you can change it to your own api 
 
@@ -47,7 +50,6 @@ def get_country_code(country_name):
     
     return country_code
     
-###############################################################################
 def plot_top_channels(country, column, top_percentile):
     """
     returns a df with top percentile Youtube channels in a specific country:
@@ -56,7 +58,7 @@ def plot_top_channels(country, column, top_percentile):
     @column: a string for the column to define "top"; 
             3 options: 'Subscriber Count', 'View Count', 'Video Count'
     @top_percentile: a double or integer indicating what percentile of creators, 
-                    ex 5 is top 5% of creators
+                    e.g. 5 is top 5% of creators
     """
     country_code = get_country_code(country) # switch the country name into country code
     if column == 'Subscriber Count':
@@ -105,10 +107,9 @@ def get_channel_id(channel_title):
     channel_id = search_response['items'][0]['id']['channelId']
     
     return channel_id
-
-###############################################################################     
+   
     
-def plot_tags_wordcloud(channel_title):
+def plot_top_tags_wordcloud(channel_title):
     """
     input a channel title, plot the wordcloud of the tags of the videos in this channel
     
@@ -130,3 +131,112 @@ def plot_tags_wordcloud(channel_title):
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
     plt.show()
+    
+############################################################################### 
+
+def convert_duration(durations):
+    """
+    converts the durations column into minutes
+    
+    @durations: the duration column
+    """
+    minutes_list = []
+    
+    for duration in durations:
+        # check if duration string is empty
+        if not duration:
+            minutes_list.append(0)
+            continue
+        
+        # check if duration string contains 'D', the ones with 'D' considered as an outlier
+        if 'D' in duration:
+            minutes_list.append(math.nan)
+            continue
+        
+        duration = duration.strip('PT')  # Remove 'PT'
+        
+        # check if the duration string contains valid duration information
+        if 'M' not in duration and 'S' not in duration:
+            minutes_list.append(0)
+            continue
+        
+        total_minutes = 0
+        hours_index = 0  
+        minutes_index = 0
+        
+        if 'H' in duration:
+            hours_index = duration.index('H')
+            hours = int(duration[:hours_index])
+            total_minutes += hours * 60
+        
+        if 'M' in duration:
+            minutes_index = duration.index('M')
+            if minutes_index > hours_index:  # check if minutes exist
+                try:
+                    minutes = int(duration[hours_index+1:minutes_index])
+                    total_minutes += minutes
+                except ValueError:
+                    pass
+        
+        if 'S' in duration:
+            seconds_index = duration.index('S')
+            if 'M' in duration and minutes_index > hours_index:
+                try:
+                    seconds = int(duration[minutes_index+1:seconds_index])
+                    total_minutes += seconds / 60
+                except ValueError:
+                    pass
+            elif 'H' in duration:
+                try:
+                    seconds = int(duration[hours_index+1:seconds_index])
+                    total_minutes += seconds / 60
+                except ValueError:
+                    pass
+            else:
+                try:
+                    seconds = int(duration[:seconds_index])
+                    total_minutes += seconds / 60
+                except ValueError:
+                    pass
+        
+        minutes_list.append(round(total_minutes, 2))
+    
+    return minutes_list
+
+
+def plot_tag_duration(channel_title):
+    """
+    input a channel title, plot the bubble plot of the video duratioin for x axis, view count for y axis, and the number of tags for the size of bubbles
+    
+    @channel_title: a string for the title of a Youtube channel
+    """
+    youtube = build('youtube', 'v3', developerKey = api_key)
+    channel_id = get_channel_id(channel_title)
+    video_id = get_videoID_list(youtube, channel_id)
+    df = get_video_details(youtube,video_id)
+
+    tag_lists = df['tags']
+    tag_len = []
+    for tag in tag_lists:
+        length = len(tag)
+        tag_len.append(length)
+
+    df['tag_len'] = tag_len
+    df['du_min'] = convert_duration(df['duration'])
+
+    df = df[df['du_min'] < 200] # exclude outliers
+    tag_view_du = df.groupby('tag_len')[['viewCount', 'du_min']].aggregate([np.mean, np.median]).reset_index()
+    #bubble map
+    fig, ax = plt.subplots(figsize=(5, 5))
+    sns.scatterplot(data = tag_view_du, 
+                    x = tag_view_du['du_min']['median'],
+                    y = tag_view_du['viewCount']['median'], 
+                    size = tag_view_du['tag_len'],
+                    legend=False, sizes=(20, 500), alpha = 0.5)
+
+    ax.set_xlabel('Median Duration (min)')
+    ax.set_ylabel('Median View Count')
+    ax.set_title('The number of tags V.S. Duration')
+    plt.show()
+
+
