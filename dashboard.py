@@ -5,31 +5,43 @@ from googleapiclient.discovery import build
 # import import_ipynb
 import os
 from dotenv import load_dotenv
+import altair as alt
+import seaborn as sns
+import matplotlib.pyplot as plt
+import sam_new_func.viz_fun as viz
 # import sam_new_func.viz_fun as viz
 # from sam_new_func import *
 
 
 
 st.title("YouTube Trending Channel Analysis")
+
+
 with st.sidebar.form(key='Form1'):
     select_mode = st.radio('Viewing Mode', ('Channel', 'Video', 'Summary Statistics'))
     num_of_subs = st.number_input('Enter subscriber count', 100)
     tags = st.text_input("Enter tag filters", " ")
     filter = st.form_submit_button(label='Filter')
-    # TODO: figure out how to plot top channel by subscriber decending 
     st.slider('Select the season range you want to include', 2013, 2020, (2013, 2020))
-    # TODO: get countries from backend
-    options = st.selectbox('Filter by countries',["United States of America", "India", "France"])
-    st.write('You selected:', options)
+    # populate conutry list from backend # TODO: get full countries list
+    countries = ["United States of America", "India", "France"]
+    selected = st.selectbox('Filter by countries', countries)
+    chosen_countries = countries[countries == selected]
+    st.write('You selected:', chosen_countries)
 
 
 @st.cache_data
 def set_up():
     # Load the variables from the .env file
     load_dotenv()
+
     # Get the API key from the environment variables
     api_key = os.getenv('YOUTUBE_API_KEY')
     youtube = build("youtube","v3",developerKey=api_key)
+
+    # 
+
+
     # st.write(viz.get_country_code("United States of America"))
     popular_channel_ids = sf.trending_creators_by_country(youtube, "US")
     channel_stats = sf.channels_stats(youtube, popular_channel_ids)
@@ -41,7 +53,17 @@ def set_up():
 
     # plot View counts of the most recent 10 channels
     channel_stats_sorted = channel_stats.sort_values(by="viewCount", ascending=False)
+    # How would SNS plots look?
+    fig = plt.figure(figsize=(10,5))
+    sns.barplot(data = channel_stats_sorted.head(10), x="title", y="viewCount")
+    st.pyplot(fig)
     st.bar_chart(channel_stats_sorted.head(10), x="title", y="viewCount")
+
+    st.write(alt.Chart(channel_stats_sorted.head(10)).mark_bar().encode(x=alt.X('title', sort=None),
+        y='viewCount',
+    ))
+
+    st.plotly_chart(viz.plot_top_channels("United States of America", 'Video Count', 10))
 
     # plot Length of videos of most recent 10 videos
     # channel_stats_sorted = channel_stats.sort_values(by="", ascending=False)
@@ -51,9 +73,10 @@ def set_up():
 # def plot():
 #     st.bar_chart(channel_stats, x="title", y="subscriberCount")
     
-    
+
 
 set_up()
+# plot_graph()
 
 # row0_spacer1, row0_1, row0_spacer2, row0_2, row0_spacer3 = st.columns((.1, 2.3, .1, 1.3, .1))
 # with row0_1:

@@ -6,6 +6,10 @@ name = "pypi"
 [packages]
 streamlit = "*"
 import-ipynb = "*"
+altair = "*"
+wordcloud = "*"
+matplotlib = "*"
+plotly = "*"
 
 [dev-packages]
 
