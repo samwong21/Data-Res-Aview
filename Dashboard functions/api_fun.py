@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sam_fun import *
+from sam_fun2 import *
 
 
 # Main Functions
