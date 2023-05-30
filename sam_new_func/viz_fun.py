@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 import pandas as pd
 import plotly.express as px
 import re
-from sam_fun import *
+from sam_new_func.sam_fun import *
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import seaborn as sns
@@ -86,7 +86,7 @@ def plot_top_channels(country, column, top_percentile):
     fig.update_layout(xaxis_title = 'Channels', yaxis_title= column)
     fig.update_layout(legend_title_text='Legend Title', 
                       legend=dict(title='Emails', x=0, y=-1.2, orientation='h'))
-    fig.show()
+    return fig
     
 ###############################################################################    
     
