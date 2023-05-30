@@ -1,6 +1,7 @@
 # Data-Res-Aview
 
-For most updated version please check DashboardOriented branch
+Main branch has most updated backend functions. 
+For most updated Dashboard please check DashboardOriented branch
 
 ## Streamlit App
 
@@ -45,10 +46,6 @@ In `.env` file, add
 - `dashboard.py`:  Main entry point of the Streamlit app.
 - pages/                 # Folder containing subpages
   - .py ...               # Subpages end in .py
-
-## Contributing
-
-[TODO: Provide guidelines for others to contribute to your project if applicable].
 
 ## License
 
