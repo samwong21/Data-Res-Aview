@@ -73,7 +73,11 @@ def pg2_api(youtube, username):
     '''
     returns data frame of one channel's stats for pg2 of dashboard
     '''
-    channel_id = get_channel_id2(youtube, username)
+    try:
+        channel_id = get_channel_id2(youtube, username)
+    except:
+        print("Error: Channel not found")
+        return pd.DataFrame()
     # all video ids for entire channel
     video_ids = get_videoID_list(youtube, channel_id)
     one_channel_stats = get_video_details(youtube, video_ids)
