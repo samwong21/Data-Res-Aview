@@ -7,6 +7,7 @@ import re
 from collections import Counter
 from sam_fun import *
 import plotly.graph_objects as go
+import numpy as np
 api_key = "AIzaSyB8eESdFrPrh6NRNN6Cbs_8lc6ksv4oNAo" # you can change it to your own api 
 
 
@@ -56,7 +57,8 @@ def get_trending_videos(country):
     request = youtube.videos().list(
         part='snippet',
         chart='mostPopular',
-        regionCode=country_code
+        regionCode=country_code,
+        maxResults = 50
     )
     response = request.execute()
     videos = response['items']
@@ -87,19 +89,28 @@ def count_trending_categories(videos):
 
     return categories
 
-def get_top_trending_categories(country):
+def get_top_trending_categories(country, num):
     videos = get_trending_videos(country)
     categories = count_trending_categories(videos)
     sorted_categories = sorted(categories.items(), key=lambda x: x[1], reverse=True)
+    top_categories = sorted_categories[:num]
 
-    top_categories = []
-    for category_id, channel_count in sorted_categories:
+    # channel_counts = list(categories.values())
+    # num_categories = len(categories)
+    # top_percentile = int(num_categories * (1 - (percentile / 100)))
+
+    # sorted_count = sorted(channel_counts)
+    # threshold = sorted_count[top_percentile]
+    # top_categories = [(category_id, count) for category_id, count in categories.items() if count >= threshold]
+
+    top_categories_num = []
+    for category_id, count in top_categories:
         category_name = get_category_name(category_id)
-        top_categories.append((category_name, channel_count))
-    return top_categories
+        top_categories_num.append((category_name, count))
+    return top_categories_num
 
-def visualize_top_categories(country):
-    top_categories = get_top_trending_categories(country)
+def visualize_top_categories(country, num):
+    top_categories = get_top_trending_categories(country, num)
     category_names = [category[0] for category in top_categories]
     channel_counts = [category[1] for category in top_categories]
 
