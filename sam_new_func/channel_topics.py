@@ -47,30 +47,68 @@ def get_country_code(country_name):
     
     return country_code
 
-def popular_categories_by_country(country):
-    youtube = build('youtube', 'v3', developerKey=api_key)
+## Functions to obtain trending category
+
+def get_trending_videos(country):
     country_code = get_country_code(country)
-    request = youtube.videoCategories().list(
+    youtube = build('youtube', 'v3', developerKey=api_key)
+
+    request = youtube.videos().list(
         part='snippet',
-        regionCode=country_code,
-        hl='en-US'
+        chart='mostPopular',
+        regionCode=country_code
     )
     response = request.execute()
-    categories = response['items']
+    videos = response['items']
 
-    category_names = []
-    video_counts = []
-    for category in categories:
-        category_names.append(category['snippet']['title'])
-        video_counts.append(category['snippet']['channelStatistics']['videoCount'])
+    return videos
 
-    # Create a bar chart using Plotly
+def get_category_name(category_id):
+    youtube = build('youtube', 'v3', developerKey=api_key)
+
+    request = youtube.videoCategories().list(
+        part='snippet',
+        id=category_id
+    )
+    response = request.execute()
+    category = response['items'][0]
+    category_name = category['snippet']['title']
+
+    return category_name
+
+def count_trending_categories(videos):
+    categories = {}
+    for video in videos:
+        categoryId = video['snippet']['categoryId']
+        if categoryId in categories:
+            categories[categoryId] += 1
+        else:
+            categories[categoryId] = 1
+
+    return categories
+
+def get_top_trending_categories(country):
+    videos = get_trending_videos(country)
+    categories = count_trending_categories(videos)
+    sorted_categories = sorted(categories.items(), key=lambda x: x[1], reverse=True)
+
+    top_categories = []
+    for category_id, channel_count in sorted_categories:
+        category_name = get_category_name(category_id)
+        top_categories.append((category_name, channel_count))
+    return top_categories
+
+def visualize_top_categories(country):
+    top_categories = get_top_trending_categories(country)
+    category_names = [category[0] for category in top_categories]
+    channel_counts = [category[1] for category in top_categories]
+
     fig = go.Figure(data=[
-        go.Bar(x=category_names, y=video_counts)
+        go.Bar(x=category_names, y=channel_counts, marker_color = 'rgb(180, 0, 0)')
     ])
 
     fig.update_layout(
-        title='Popular YouTube Channel Categories in {}'.format(country),
+        title='Top Trending YouTube Channel Categories',
         xaxis_title='Category',
         yaxis_title='Number of Channels'
     )
