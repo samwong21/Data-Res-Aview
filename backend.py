@@ -1,12 +1,12 @@
 import pycountry
 import streamlit as st
-import os
-from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from Dashboardfunctions.api_fun import *
 
 # region All Page Functions
+
+
 
 
 @st.cache_data
@@ -15,14 +15,17 @@ def setup_and_getKey():
     Loads the API key from the .env file and returns the YouTube API key
     Page used: All pages
     """
-    load_dotenv()
-    api_key = os.getenv('YOUTUBE_API_KEY')
+    api_key = st.secrets["YOUTUBE_API_KEY"]
     try:
         youtube = build("youtube", "v3", developerKey=api_key)
         return youtube
     except Exception as e:
         st.error("Error building youtube object: ", e)
         st.stop()
+
+@st.cache_data
+def convert_df(df):
+   return df.to_csv(index=False).encode('utf-8')
 
 # endregion
 

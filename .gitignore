@@ -5,3 +5,5 @@ sam_new_func/
 pastfiles/
 dashboard.py
 .DS_Store
+.streamlit/secrets.toml
+```

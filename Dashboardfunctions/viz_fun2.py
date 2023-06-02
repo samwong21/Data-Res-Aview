@@ -157,7 +157,7 @@ def plot_top_tags_wordcloud(channel_df):
     tag_lists = channel_df['tags']
 
     text = ' '.join(str(tag) for tag in tag_lists)
-    wordcloud = WordCloud(background_color="white").generate(text)
+    wordcloud = WordCloud(mode='RGBA', margin=0, contour_width=0).generate(text)
 
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
@@ -253,18 +253,23 @@ def plot_tag_duration(channel_df):
     channel_df['du_min'] = convert_duration(channel_df['duration'])
 
     channel_df = channel_df[channel_df['du_min'] < 200] # exclude outliers
-    tag_view_du = channel_df.groupby('tag_len')[['viewCount', 'du_min']].aggregate([np.mean, np.median]).reset_index()
-    #bubble plot
-    fig, ax = plt.subplots(figsize=(5, 5))
-    sns.scatterplot(data = tag_view_du, 
-                    x = tag_view_du['du_min']['median'],
-                    y = tag_view_du['viewCount']['median'], 
-                    size = tag_view_du['tag_len'],
-                    legend=False, sizes=(20, 500), alpha = 0.5)
+    tag_view_du = channel_df.groupby('tag_len')[['viewCount','du_min']].aggregate(np.median).reset_index()
+    tag_view_du = tag_view_du.rename(columns={"(  'tag_len',       '')": 'tag_len',
+                                              "('viewCount',   'mean')": 'view_mean', 
+                                              "('viewCount', 'median')": 'view_median',
+                                              "(   'du_min',   'mean')": 'du_mean',
+                                              "(   'du_min', 'median')": 'du_median'})
 
-    ax.set_xlabel('Median Duration (min)')
-    ax.set_ylabel('Median View Count')
-    ax.set_title('The number of tags V.S. Duration')
+    fig = px.scatter(tag_view_du, 
+                     x = "du_min", 
+                     y = "viewCount",
+                     size = "tag_len", 
+                     hover_name = "tag_len", size_max=30)
+    fig.update_traces(hovertemplate='%{hovertext} tags<br>Median View Count: %{y}')
+    fig.update_layout(xaxis_title="Median Duration (min)", 
+                      yaxis_title="Median View Count",
+                      title = "Duration V.S. The number of tags",
+                      plot_bgcolor='black')
     return fig
 
 

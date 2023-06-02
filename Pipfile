@@ -11,6 +11,7 @@ wordcloud = "*"
 matplotlib = "*"
 plotly = "*"
 pycountry = "*"
+toml = "*"
 
 [dev-packages]
 

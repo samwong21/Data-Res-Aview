@@ -6,6 +6,8 @@ import numpy as np
 from Dashboardfunctions.viz_fun2 import *
 from Dashboardfunctions.metrics_samviz import *
 
+def update_conutry_name():
+    pass
 
 with st.sidebar:
     # region country selection dropdown
@@ -17,12 +19,13 @@ with st.sidebar:
         index = default_index
     selected_country_name = st.sidebar.selectbox(
         'Filter channels by countries',
-        country_names, index=index, help="Some countries are not supported in YouTube API")
-    st.session_state.country_name = selected_country_name
+        country_names, index=index, help="Some countries are not supported in YouTube API", on_change=update_conutry_name())
     # endregion
 
+def update_conutry_name():
+    st.session_state.country_name = selected_country_name
 
-st.title("AVIEW X DataRes - YouTube Trending Channel Analysis")
+st.title("AVIEW X DataRes - Analysis of Top Youtube Channels in " + selected_country_name)
 st.subheader(
     "By: Anvesha Dutta, Proud Jiao, Eric Huang, Lina Molla, Olivia Wang, Samantha Wong, Tanya Beri")
 
@@ -79,3 +82,16 @@ st.session_state.titles = homepage_df["title"]
 st.plotly_chart(topic_count_viz_sam(topic_df))
 st.plotly_chart(topic_avg_sub_viz_sam(topic_df))
 st.plotly_chart(topic_avg_view_viz_sam(topic_df))
+
+
+csv = convert_df(homepage_df_filtered)
+
+st.download_button(
+   "Download Dataframe",
+   csv,
+   "topYoutubeChannelsIn" + selected_country_name + ".csv",
+   "text/csv",
+   key='download-csv'
+)
+
+st.write(homepage_df_filtered)

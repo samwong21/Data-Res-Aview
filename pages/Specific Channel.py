@@ -11,7 +11,11 @@ from Dashboardfunctions.viz_fun2 import *
 from Dashboardfunctions.metrics_samviz import *
 # from Dashboardfunctions.sam_fun2 import *
 
+# st.set_page_config(layout="wide")
 youtube = setup_and_getKey()
+
+def update_session_state():
+    pass
 
 # Create an input box on the sidebar for YouTube channel name
 with st.sidebar:
@@ -20,9 +24,10 @@ with st.sidebar:
     else:
         default_channel_name = 'MrBeast'
     channel_name = st.text_input(
-        "Enter YouTube Channel Name", value=default_channel_name)
-    st.session_state.channel_name = channel_name
+        "Enter YouTube Channel Name", value=default_channel_name, on_change=update_session_state())
 
+def update_session_state():
+    st.session_state.channel_name = channel_name
 
 st.title("AVIEW X DataRes - Channel Specific Statistics")
 
@@ -33,7 +38,6 @@ col1.metric(label="Average duration (min)", value=avg_duration(channel))
 col2.metric(label="Average duration for top videos (min)", value=top_vid_avg_duration(channel))
 
 
-
 @st.cache_data
 def visualize_channel_lina1(channel):
     columns = ['Like Count', 'View Count', 'Comment Count', "Duration"]
@@ -42,7 +46,6 @@ def visualize_channel_lina1(channel):
             title = 'Duration in Minutes for 10 Most Recent Videos'
         else:
             title = 'Number of ' + column + ' on 10 Most Recent Videos'
-        # st.subheader(title)
         st.plotly_chart(plot_most_recent(channel, column))
 
 
@@ -50,20 +53,29 @@ visualize_channel_lina1(channel)
 
 
 @st.cache_data
-def visualize_channel_lina2(channel):
-    # st.subheader('Overall Top 5 Most Used Tags')
-    st.plotly_chart(plot_top_tags(channel))
+def get_plot_lina2(channel):
+    return plot_top_tags(channel)
 
-
-visualize_channel_lina2(channel)
+st.plotly_chart(get_plot_lina2(channel))
 
 @st.cache_data
-def visualize_channel_viz1(channel):
-    st.subheader('Top tags of popular videos')
-    st.pyplot(plot_top_tags_wordcloud(channel))
+def get_plot_viz1(channel):
+    st.markdown('#### Top tags of popular videos')
+    return plot_top_tags_wordcloud(channel)
 
-visualize_channel_viz1(channel)
+st.pyplot(get_plot_viz1(channel))
 
-st.pyplot(plot_tag_duration(channel))
+st.plotly_chart(plot_tag_duration(channel))
+
+
+csv = convert_df(channel)
+
+st.download_button(
+   "Download Dataframe",
+   csv,
+   channel_name+"TopVids.csv",
+   "text/csv",
+   key='download-csv'
+)
 
 st.write(channel)
