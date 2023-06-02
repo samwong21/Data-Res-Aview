@@ -88,7 +88,7 @@ def plot_most_recent(df, column):
                       width=1000,
                       height=500,
                       margin=dict(l=100, r=100, t=100, b=100))
-    fig.show()
+    return fig
 ###############################################################################    
 def plot_top_tags(df):
     """
@@ -122,7 +122,7 @@ def plot_top_tags(df):
                       width=1000,
                       height=500,
                       margin=dict(l=100, r=100, t=100, b=100))
-    fig.show()
+    return fig
 #########################helper functions#######################################    
 def top_tags_modified(tags_list):
     """

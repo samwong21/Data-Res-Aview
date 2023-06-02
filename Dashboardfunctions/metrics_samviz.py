@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 import plotly.express as px
-from api_fun import *
+from Dashboardfunctions.api_fun import *
+import streamlit as st
 
 ##Overall Metrics
 def avg_views(df):
@@ -23,6 +24,7 @@ def top_topics(topic_df):
     Needs ** topic_df=topics_df(homepage_df) ** to run
     Returns top 10 most popular topics. Only works for page 1
     '''
+    st.write(topic_df)
     return topic_df.nlargest(20,["Number of Channels"])[0:10]["Topic"]
 
 def avg_duration(one_channel_df):
@@ -52,7 +54,7 @@ def topic_count_viz_sam(topic_df):
     topic_df = topic_df.nlargest(20,["Average Subscriber Count"])
     fig = px.bar(topic_df, y= "Topic", x = "Number of Channels", title = "Top 20 Topics based on Appearance on Youtube Trending Page",color = "Number of Channels",orientation = "h", color_continuous_scale = "Agsunset" )
     fig.update_layout(yaxis={'categoryorder':'total ascending'})
-    fig.show()
+    return fig
     
     
 def topic_avg_sub_viz_sam(topic_df):
@@ -62,7 +64,7 @@ def topic_avg_sub_viz_sam(topic_df):
     topic_df = topic_df.nlargest(20,["Average Subscriber Count"])
     fig = px.bar(topic_df, y= "Topic", x = "Average Subscriber Count", title = "Top 20 Topics Based on Average Number of Subscribers",color = "Average Subscriber Count",orientation = "h", color_continuous_scale = "Darkmint" )
     fig.update_layout(yaxis={'categoryorder':'total ascending'})
-    fig.show()
+    return fig
     
     
     
@@ -74,7 +76,7 @@ def topic_avg_view_viz_sam(topic_df):
     topic_df = topic_df.nlargest(20,["Average Channel View Count"])
     fig = px.bar(topic_df, y= "Topic", x = "Average Channel View Count", title = "Top 20 Topics Based on Average Number of Views",color = "Average Channel View Count",orientation = "h", color_continuous_scale = "Viridis" )
     fig.update_layout(yaxis={'categoryorder':'total ascending'})
-    fig.show()
+    return fig
     
 
 

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sam_fun2 import *
+from Dashboardfunctions.sam_fun2 import *
 
 
 # Main Functions
@@ -47,7 +47,7 @@ def between_subs(df,lower_limit,upper_limit):
     filtered_df = df[df['subscriberCount'].between(lower_limit, upper_limit)]
     return filtered_df.reset_index(drop=True)
 
-def categorize_channels(chosen_topics,df):
+def categorize_channels(chosen_topics,df): # TODO: look into this function
     '''
     Takes a list of topics, returns channels that include at least one of specified topics
     

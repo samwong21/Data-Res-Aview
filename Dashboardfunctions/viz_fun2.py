@@ -10,19 +10,20 @@
     
     #5) plot_tag_duration(channel_df)
 
-
+import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 from googleapiclient.discovery import build
 import pandas as pd
 import plotly.express as px
 import re
-from sam_fun import *
+# from sam_fun import *
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import seaborn as sns
 import math
 from datetime import datetime, timedelta
+import numpy as np
 
 
 ########## scraping from https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#AA############
@@ -81,7 +82,7 @@ def plot_top_channels_viewcount(homepage_df):
     fig.update_layout(xaxis_title = 'Channels', yaxis_title= "View Count")
     fig.update_layout(legend_title_text='Legend Title', 
                       legend=dict(title='Emails', x=0, y=-1.2, orientation='h'))
-    fig.show()
+    return fig
     
 def plot_top_channels_subscribercount(homepage_df):
     """
@@ -101,7 +102,7 @@ def plot_top_channels_subscribercount(homepage_df):
     fig.update_layout(xaxis_title = 'Channels', yaxis_title= "Subscriber Count")
     fig.update_layout(legend_title_text='Legend Title', 
                       legend=dict(title='Emails', x=0, y=-1.2, orientation='h'))
-    fig.show()
+    return fig 
     
 
 def plot_top_channels_videocount(homepage_df):
@@ -122,7 +123,7 @@ def plot_top_channels_videocount(homepage_df):
     fig.update_layout(xaxis_title = 'Channels', yaxis_title= "Video Count")
     fig.update_layout(legend_title_text='Legend Title', 
                       legend=dict(title='Emails', x=0, y=-1.2, orientation='h'))
-    fig.show()
+    return fig
 
     
 ###############################################################################    
@@ -155,12 +156,13 @@ def plot_top_tags_wordcloud(channel_df):
 
     tag_lists = channel_df['tags']
 
-    text = ' '.join(tag_lists)
+    text = ' '.join(str(tag) for tag in tag_lists)
     wordcloud = WordCloud(background_color="white").generate(text)
 
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
-    plt.show()
+    # st.write(type(plt))
+    return plt
     
 ############################################################################### 
 
@@ -263,6 +265,6 @@ def plot_tag_duration(channel_df):
     ax.set_xlabel('Median Duration (min)')
     ax.set_ylabel('Median View Count')
     ax.set_title('The number of tags V.S. Duration')
-    plt.show()
+    return fig
 
 
