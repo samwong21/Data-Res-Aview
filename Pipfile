@@ -12,6 +12,7 @@ matplotlib = "*"
 plotly = "*"
 pycountry = "*"
 toml = "*"
+google-api-python-client = "*"
 
 [dev-packages]
 
