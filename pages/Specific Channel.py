@@ -58,12 +58,10 @@ def get_plot_lina2(channel):
 
 st.plotly_chart(get_plot_lina2(channel))
 
-@st.cache_data
-def get_plot_viz1(channel):
-    st.markdown('#### Top tags of popular videos')
-    return plot_top_tags_wordcloud(channel)
 
-st.pyplot(get_plot_viz1(channel))
+
+st.markdown('#### Top tags of popular videos')
+st.pyplot(plot_top_tags_wordcloud(channel))
 
 st.plotly_chart(plot_tag_duration(channel))
 

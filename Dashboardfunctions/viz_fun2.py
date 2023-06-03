@@ -10,20 +10,19 @@
     
     #5) plot_tag_duration(channel_df)
 
-import streamlit as st
+
 import requests
 from bs4 import BeautifulSoup
 from googleapiclient.discovery import build
 import pandas as pd
 import plotly.express as px
 import re
-# from sam_fun import *
+from sam_new_func.sam_fun import *
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 import seaborn as sns
 import math
 from datetime import datetime, timedelta
-import numpy as np
 
 
 ########## scraping from https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#AA############
@@ -102,7 +101,7 @@ def plot_top_channels_subscribercount(homepage_df):
     fig.update_layout(xaxis_title = 'Channels', yaxis_title= "Subscriber Count")
     fig.update_layout(legend_title_text='Legend Title', 
                       legend=dict(title='Emails', x=0, y=-1.2, orientation='h'))
-    return fig 
+    return fig
     
 
 def plot_top_channels_videocount(homepage_df):
@@ -161,7 +160,6 @@ def plot_top_tags_wordcloud(channel_df):
 
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis('off')
-    # st.write(type(plt))
     return plt
     
 ############################################################################### 
