@@ -302,14 +302,34 @@ def add_emails(df):
     df['emails'] = email_list
     
     return df
+
+def add_emails_sam(youtube,channel_id):
+    """
+    Inputs a df(e.g. in_stats_df), Returns a new data frame with one more column 'email', 
+    which contains email address for the corresponding channel from 'description'; 
+    returns NaN if no email address detected.
+    
+    Parameter:
+    @df: a data frame, such as 'in_stats_df'
+    """
+    email_list = []
+    des = get_1_channel_description(youtube,channel_id)
+    
+    email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+  
+    emails = re.findall(email_regex, des)
+
+    if len(emails) == 0:
+        email_list.append(np.nan)
+    else:
+        delimiter = ', '
+        result = delimiter.join(emails)
+        email_list.append(result)
+    
+    return email_list
     
 
-    
-
-
-
-
-    
+   
     
 def get_channel_id(channel_title):
     """

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from Dashboardfunctions.sam_fun2 import *
+from sam_fun2 import *
 
 
 # Main Functions
@@ -47,7 +47,7 @@ def between_subs(df,lower_limit,upper_limit):
     filtered_df = df[df['subscriberCount'].between(lower_limit, upper_limit)]
     return filtered_df.reset_index(drop=True)
 
-def categorize_channels(chosen_topics,df): # TODO: look into this function
+def categorize_channels(chosen_topics,df):
     '''
     Takes a list of topics, returns channels that include at least one of specified topics
     
@@ -72,6 +72,8 @@ def pg2_api(youtube,username):
     #all video ids for entire channel
     video_ids = get_videoID_list(youtube,channel_id)
     one_channel_stats = get_video_details(youtube,video_ids)
+    one_channel_stats["emails"] = add_emails_sam(youtube,channel_id)* len(one_channel_stats)
+    one_channel_stats.insert(0,"username",username) 
     return one_channel_stats
 
 
